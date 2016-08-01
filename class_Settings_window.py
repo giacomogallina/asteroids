@@ -111,6 +111,6 @@ class Value_changer():
 
     def change_value(self, value):
         self.new_value = int((value/self.lenght*(self.max-self.min))+self.min)
-        print(self.new_value)
+        #print(self.new_value)
         #print('test')
         self.label.setText(str(self.new_value))
