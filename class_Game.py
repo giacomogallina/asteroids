@@ -8,10 +8,26 @@ class Game:
     points_font = pygame.font.Font(None, 36)
     level_font = pygame.font.Font(None, 100)
     start_font = pygame.font.Font(None, 200)
+    started = False
     Ps = []
 
     def __init__(self):
         global highscore, window_width, window_height, framerate, players, settings_file, surface
+        self.import_settings()
+        self.surface = pygame.display.set_mode((self.window_width, self.window_height))
+        pygame.display.set_caption('ASTEROIDS / Game')
+        self.acceleration = 1000.0 / (self.framerate**2)
+        self.friction = 0.8 ** (1.0/self.framerate)
+        self.rotation_speed = 5.0 / self.framerate
+        self.projectile_speed = 400.0 / self.framerate
+        self.asteroid_speed = 200.0 / self.framerate
+        self.frame_time = time.time()
+        self.frame_duration = 1.0 / self.framerate
+        self.frame = 0
+        for i in range(0, 8):
+            self.Ps.append(Projectile(self))
+
+    def import_settings(self):
         try:
             settings_file = open('settings.txt', 'r+')
         except:
@@ -27,19 +43,6 @@ class Game:
         self.window_height = int(settings[2])
         self.framerate = int(settings[3])
         self.players = int(settings[4])
-
-        self.surface = pygame.display.set_mode((self.window_width, self.window_height))
-        pygame.display.set_caption('ASTEROIDS / Game')
-        self.acceleration = 1000.0 / (self.framerate**2)
-        self.friction = 0.8 ** (1.0/self.framerate)
-        self.rotation_speed = 5.0 / self.framerate
-        self.projectile_speed = 400.0 / self.framerate
-        self.asteroid_speed = 200.0 / self.framerate
-        self.frame_time = time.time()
-        self.frame_duration = 1.0 / self.framerate
-        self.frame = 0
-        for i in range(0, 8):
-            self.Ps.append(Projectile(self))
 
     def wait_next_frame(self):
         while time.time() < self.frame_time + self.frame_duration:

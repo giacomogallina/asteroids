@@ -1,5 +1,5 @@
 from PyQt4 import QtGui, QtCore
-import sys
+import sys, pygame
 
 class Settings_window(QtGui.QMainWindow):
 
@@ -94,7 +94,50 @@ class Settings_window(QtGui.QMainWindow):
         self.setCentralWidget(cwidget)
 
     def apply(self):
-        pass
+        old_framerate = self.value_changers[2].old_value
+        old_players = self.value_changers[3].old_value
+        settings_file = open('settings.txt', 'w')
+        settings_file.write(str(self.boss.highscore)+'\n'\
+                            +str(self.value_changers[0].new_value)+'\n'+\
+                            str(self.value_changers[1].new_value)+'\n'\
+                            +str(self.value_changers[2].new_value)+'\n'+\
+                            str(self.value_changers[3].new_value))
+        settings_file.close()
+        self.boss.import_settings()
+        self.boss.surface = pygame.display.set_mode\
+        ((self.boss.window_width, self.boss.window_height))
+        self.boss.acceleration = 1000.0 / (self.boss.framerate**2)
+        self.boss.friction = 0.8 ** (1.0/self.boss.framerate)
+        self.boss.rotation_speed = 5.0 / self.boss.framerate
+        self.boss.projectile_speed = 400.0 / self.boss.framerate
+        self.boss.asteroid_speed = 200.0 / self.boss.framerate
+        self.boss.frame_duration = 1.0 / self.boss.framerate
+        if self.boss.started:
+            self.boss.shuttle_1.Vx *= old_framerate/self.boss.framerate
+            self.boss.shuttle_1.Vy *= old_framerate/self.boss.framerate
+            if self.boss.players == 2:
+                try:
+                    self.boss.shuttle_2.Vx *= old_framerate/framerate
+                    self.boss.shuttle_2.Vy *= old_framerate/self.boss.framerate
+                except:
+                    self.boss.shuttle_2 = self.boss.ship()
+                    self.boss.shuttle_2.Vx *= old_framerate/self.boss.framerate
+                    self.boss.shuttle_2.Vy *= old_framerate/self.boss.framerate
+                    self.boss.shuttle_1.color = (0, 255, 0)
+                    self.boss.shuttle_2.color = (255, 0, 0)
+            for i in self.boss.Ps:
+                i.Vx *= old_framerate/self.boss.framerate
+                i.Vy *= old_framerate/self.boss.framerate
+            for i in self.boss.As:
+                i.Vx *= old_framerate/self.boss.framerate
+                i.Vy *= old_framerate/self.boss.framerate
+            #self.boss.players =
+            if old_players != self.boss.players:
+                if self.boss.players == 2:
+                    self.boss.lifes += 2
+                else:
+                    self.boss.lifes -= 2
+                    self.boss.shuttle_1.color = (255, 255, 255)
 
     def quit(self):
         sys.exit()
