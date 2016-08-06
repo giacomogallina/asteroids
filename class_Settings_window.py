@@ -31,6 +31,8 @@ class Settings_window(QtGui.QMainWindow):
 
         cwidget = QtGui.QWidget()
         self.grid = QtGui.QGridLayout()
+        self.vbox = QtGui.QVBoxLayout()
+        self.hbox = QtGui.QHBoxLayout()
         self.grid.addWidget(QtGui.QLabel('Window Width:'), 0, 0)
         self.grid.addWidget(QtGui.QLabel('Window Height:'), 1, 0)
         self.grid.addWidget(QtGui.QLabel('Framerate:'), 2, 0)
@@ -55,10 +57,26 @@ class Settings_window(QtGui.QMainWindow):
         self.grid.addWidget(self.framerate_label, 2, 1)
         self.grid.addWidget(self.players_label, 3, 1)
 
+
+
         window_width_slider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
         window_height_slider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
         framerate_slider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
         players_slider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
+
+        more_less_buttons = []
+
+        for i in range(4):
+            more_less_buttons.append(QtGui.QPushButton('-'))
+            button_width = more_less_buttons[i].fontMetrics().boundingRect('-').width() + 20
+            more_less_buttons[i].setMaximumWidth(button_width)
+            more_less_buttons[i].clicked.connect(self.value_changers[i].less)
+
+        for i in range(4):
+            more_less_buttons.append(QtGui.QPushButton('+'))
+            button_width = more_less_buttons[i+4].fontMetrics().boundingRect('+').width() + 20
+            more_less_buttons[i+4].setMaximumWidth(button_width)
+            more_less_buttons[i+4].clicked.connect(self.value_changers[i].more)
 
         window_width_slider.valueChanged[int].connect(self.value_changers[0].change_value)
         window_height_slider.valueChanged[int].connect(self.value_changers[1].change_value)
@@ -69,12 +87,24 @@ class Settings_window(QtGui.QMainWindow):
         self.grid.addWidget(window_height_slider, 1, 4)
         self.grid.addWidget(framerate_slider, 2, 4)
         self.grid.addWidget(players_slider, 3, 4)
-        self.grid.addWidget(apply_button, 5, 4)
-        self.grid.addWidget(quit_button, 5, 4)
+        self.grid.addWidget(more_less_buttons[0], 0, 3)
+        self.grid.addWidget(more_less_buttons[1], 1, 3)
+        self.grid.addWidget(more_less_buttons[2], 2, 3)
+        self.grid.addWidget(more_less_buttons[3], 3, 3)
+        self.grid.addWidget(more_less_buttons[4], 0, 5)
+        self.grid.addWidget(more_less_buttons[5], 1, 5)
+        self.grid.addWidget(more_less_buttons[6], 2, 5)
+        self.grid.addWidget(more_less_buttons[7], 3, 5)
+        self.hbox.addStretch(1)
+        self.hbox.addWidget(apply_button)
+        self.hbox.addWidget(quit_button)
+        self.vbox.addLayout(self.grid)
+        self.vbox.addStretch(1)
+        self.vbox.addLayout(self.hbox)
 
 
 
-        cwidget.setLayout(self.grid)
+        cwidget.setLayout(self.vbox)
         self.setCentralWidget(cwidget)
 
     def apply(self):
@@ -113,3 +143,13 @@ class Value_changer():
         #print(self.new_value)
         #print('test')
         self.label.setText(str(self.new_value))
+
+    def more(self):
+        if self.new_value < self.max:
+            self.new_value += 1
+            self.label.setText(str(self.new_value))
+
+    def less(self):
+        if self.new_value > self.min:
+            self.new_value -= 1
+            self.label.setText(str(self.new_value))
