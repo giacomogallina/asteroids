@@ -7,14 +7,7 @@ class Settings_window(QtGui.QMainWindow):
 
     def __init__(self, boss):
         self.boss = boss
-        # old_window_width = self.boss.window_width
-        # old_window_height = self.boss.window_height
-        # old_framerate = self.boss.framerate
-        # old_players = self.boss.players
-        # new_window_width = self.boss.window_width
-        # new_window_height = self.boss.window_height
-        # new_framerate = self.boss.framerate
-        # new_players = self.boss.players
+
 
         QtGui.QMainWindow.__init__(self)
         self.setWindowTitle('ASTEROIDS / Settings')
@@ -57,12 +50,12 @@ class Settings_window(QtGui.QMainWindow):
         self.grid.addWidget(self.framerate_label, 2, 1)
         self.grid.addWidget(self.players_label, 3, 1)
 
+        self.sliders = []
 
-
-        window_width_slider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
-        window_height_slider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
-        framerate_slider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
-        players_slider = QtGui.QSlider(QtCore.Qt.Horizontal, self)
+        for i in range(4):
+            self.sliders.append(QtGui.QSlider(QtCore.Qt.Horizontal, self))
+            self.sliders[i].valueChanged[int].connect(self.value_changers[i].change_value)
+            self.grid.addWidget(self.sliders[i], i, 4)
 
         more_less_buttons = []
 
@@ -71,22 +64,15 @@ class Settings_window(QtGui.QMainWindow):
             button_width = more_less_buttons[i].fontMetrics().boundingRect('-').width() + 20
             more_less_buttons[i].setMaximumWidth(button_width)
             more_less_buttons[i].clicked.connect(self.value_changers[i].less)
+            self.grid.addWidget(more_less_buttons[i], i, 3)
 
         for i in range(4):
             more_less_buttons.append(QtGui.QPushButton('+'))
             button_width = more_less_buttons[i+4].fontMetrics().boundingRect('+').width() + 20
             more_less_buttons[i+4].setMaximumWidth(button_width)
             more_less_buttons[i+4].clicked.connect(self.value_changers[i].more)
+            self.grid.addWidget(more_less_buttons[i+4], i, 5)
 
-        window_width_slider.valueChanged[int].connect(self.value_changers[0].change_value)
-        window_height_slider.valueChanged[int].connect(self.value_changers[1].change_value)
-        framerate_slider.valueChanged[int].connect(self.value_changers[2].change_value)
-        players_slider.valueChanged[int].connect(self.value_changers[3].change_value)
-
-        self.grid.addWidget(window_width_slider, 0, 4)
-        self.grid.addWidget(window_height_slider, 1, 4)
-        self.grid.addWidget(framerate_slider, 2, 4)
-        self.grid.addWidget(players_slider, 3, 4)
         self.grid.addWidget(more_less_buttons[0], 0, 3)
         self.grid.addWidget(more_less_buttons[1], 1, 3)
         self.grid.addWidget(more_less_buttons[2], 2, 3)
