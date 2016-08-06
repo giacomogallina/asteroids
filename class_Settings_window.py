@@ -96,7 +96,6 @@ class Value_changer():
         self.min = min_value
         self.max = max_value
         self.label = label
-        #print(self.label)
         # self.index = index
         #self.slider.setGeometry(30, 40, self.lenght, 30)
         #slider.valueChanged[int].connect(self.change_value)
