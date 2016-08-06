@@ -95,7 +95,6 @@ class Value_changer():
         self.lenght = 99#100
         self.min = min_value
         self.max = max_value
-        #print(label)
         self.label = label
         #print(self.label)
         # self.index = index
