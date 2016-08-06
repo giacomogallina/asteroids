@@ -24,8 +24,7 @@ class Settings_window(QtGui.QMainWindow):
 
         quit_button = QtGui.QPushButton('Quit')
         apply_button = QtGui.QPushButton('Apply')
-        self.value_changers.append(Value_changer(self, self.boss.players, \
-                                        1, 2))
+
 
         quit_button.clicked.connect(self.quit)
         apply_button.clicked.connect(self.apply)
@@ -66,12 +65,12 @@ class Settings_window(QtGui.QMainWindow):
         framerate_slider.valueChanged[int].connect(self.value_changers[2].change_value)
         players_slider.valueChanged[int].connect(self.value_changers[3].change_value)
 
-        self.grid.addWidget(window_width_slider, 0, 2)
-        self.grid.addWidget(window_height_slider, 1, 2)
-        self.grid.addWidget(framerate_slider, 2, 2)
-        self.grid.addWidget(players_slider, 3, 2)
-        self.grid.addWidget(apply_button, 5, 1)
-        self.grid.addWidget(quit_button, 5, 2)
+        self.grid.addWidget(window_width_slider, 0, 4)
+        self.grid.addWidget(window_height_slider, 1, 4)
+        self.grid.addWidget(framerate_slider, 2, 4)
+        self.grid.addWidget(players_slider, 3, 4)
+        self.grid.addWidget(apply_button, 5, 4)
+        self.grid.addWidget(quit_button, 5, 4)
 
 
 
@@ -93,10 +92,12 @@ class Value_changer():
         # self.boss = boss
         # slider = QtGui.QSlider(QtCore.Qt.Horizontal, boss)
         # slider.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.lenght = 100
+        self.lenght = 99#100
         self.min = min_value
         self.max = max_value
+        #print(label)
         self.label = label
+        #print(self.label)
         # self.index = index
         #self.slider.setGeometry(30, 40, self.lenght, 30)
         #slider.valueChanged[int].connect(self.change_value)
@@ -110,7 +111,7 @@ class Value_changer():
         # self.hbox.addWidget(slider)
 
     def change_value(self, value):
-        self.new_value = int((value/self.lenght*(self.max-self.min))+self.min)
+        self.new_value = int(((value*1.0)/self.lenght*(self.max-self.min))+self.min)
         #print(self.new_value)
         #print('test')
         self.label.setText(str(self.new_value))
