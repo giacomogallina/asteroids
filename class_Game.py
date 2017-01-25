@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pygame, time, sys
 from class_Ship import *
 from class_Settings_window import *
@@ -140,10 +141,10 @@ class Game:
 
     def draw_options(self):
         #print("options hasn't been implemented yet")
-        app = QtGui.QApplication(sys.argv)
-        settings_window = Settings_window(self)
-        settings_window.show()
-        app.exec_()
+
+        s = Settings_window(self)
+
+        self.frame_time = time.time()
 
     def move(self):
         self.check_for_level()
@@ -174,6 +175,7 @@ class Game:
 
     def draw_gameover(self):
         death_frame = self.frame
+
         while True:
             self.wait_next_frame()
             gc = 255 * (self.frame - death_frame)/self.framerate
@@ -215,7 +217,7 @@ class Game:
         self.frame_time = time.time()
         while True:
             self.wait_next_frame()
-            gc = 255 * (1-(self.frame - death_frame - self.framerate)/self.framerate) +1
+            gc = 255 * (1-(self.frame - death_frame - self.framerate)*1.0/self.framerate) +1
             self.surface.fill((0, 0, 0))
             gameover_box_1 = self.level_font.render('GAME OVER', \
                                                     0, (gc, gc, gc))
@@ -234,6 +236,8 @@ class Game:
             pygame.display.update()
             if self.frame == death_frame + 2*self.framerate:
                 break
+
+        return True
 
     def start(self):
         self.frame_time = time.time()
@@ -284,3 +288,4 @@ class Game:
             pygame.display.update()
             if self.wait_for_space():
                 break
+        self.started = True
