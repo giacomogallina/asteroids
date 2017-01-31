@@ -8,7 +8,7 @@ class Ship:
     Vy = 0
     left = False
     right = False
-    up = False
+    up = 0
     shoot = False
     pulsing = True
 
@@ -34,14 +34,25 @@ class Ship:
         if self.up:
             self.Vx += (self.boss.acceleration / 2 * math.cos(self.D))
             self.Vy -= (self.boss.acceleration / 2 * math.sin(self.D))
+        if time.time()-self.pulse_time > 3:
+            self.pulsing = False
+        if self.shoot:
+            self.boss.points -= 1
+            for i in self.boss.Ps:
+                if i.unused():
+                    i.shoot(self.X, self.Y, self.Vx, self.Vy, self.D, self.color)
+                    self.shoot = False
+                    break
+
+    def draw(self, surface):
         if not self.pulsing or (time.time() - self.pulse_time)%0.5 >= 0.2:
-            pygame.draw.lines(self.boss.surface, self.color, True, (\
+            pygame.draw.lines(surface, self.color, True, (\
             (self.X + 10 * math.cos(self.D), self.Y  - 10 * math.sin(self.D)),\
             (self.X + 10 * math.cos((self.D + math.pi*3/4)%(2*math.pi)), self.Y  - 10 * math.sin((self.D + math.pi*3/4)%(2*math.pi))),\
             (self.X + 10 * math.cos((self.D + math.pi*5/4)%(2*math.pi)), self.Y  - 10 * math.sin((self.D + math.pi*5/4)%(2*math.pi))),\
             ), 1)
             if self.up:
-                pygame.draw.lines(self.boss.surface, self.color, True, (\
+                pygame.draw.lines(surface, self.color, True, (\
                     (self.X - 14 * math.cos(self.D), \
                      self.Y + 14 * math.sin(self.D)),\
                     (self.X - 14 * math.cos(self.D) \
@@ -52,15 +63,7 @@ class Ship:
                      + 7 * math.cos(self.D+math.pi/4), \
                      self.Y + 14 * math.sin(self.D)\
                      - 7 * math.sin(self.D+math.pi/4))), 1)
-        if time.time()-self.pulse_time > 3:
-            self.pulsing = False
-        if self.shoot:
-            self.boss.points -= 1
-            for i in self.boss.Ps:
-                if i.unused():
-                    i.shoot(self.X, self.Y, self.Vx, self.Vy, self.D, self.color)
-                    self.shoot = False
-                    break
+
 
     def is_destroied(self):
         if not self.pulsing:

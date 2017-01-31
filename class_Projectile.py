@@ -4,6 +4,7 @@ class Projectile:
     global window_width, window_height
     X = -10
     Y = -10
+    D = 0
     Vx = 0
     Vy = 0
     birth = 0
@@ -30,7 +31,9 @@ class Projectile:
     def move(self):
         self.X = (self.X + self.Vx)%self.boss.window_width
         self.Y = (self.Y + self.Vy)%self.boss.window_height
-        pygame.draw.circle(self.boss.surface, self.color, \
+
+    def draw(self, surface):
+        pygame.draw.circle(surface, self.color, \
                            (int(self.X), int(self.Y)), 2, 0)
 
     def unused(self):
