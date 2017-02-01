@@ -119,7 +119,7 @@ class Game:
         #print('status received!')
         if temp_status != 'null':
             temp_status = temp_status.split(',')
-            print(temp_status)
+            #print(temp_status)
             self.status = []
             self.status.append(int(temp_status[0]))
             self.status.append(int(temp_status[1]))
