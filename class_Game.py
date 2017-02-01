@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import pygame, time, sys, socket
+import pygame, time, sys, socket, threading
 from class_Ship import *
 from class_Settings_window import *
 #from class_Engine import Engine
@@ -15,7 +15,7 @@ class Game:
     Ps = []
     username = 'test'
     events_queue = ''
-    status = []
+    status = [0, 0, [], [], [], [], []]
 
 
     def __init__(self):
@@ -100,53 +100,15 @@ class Game:
             self.events_queue = 'null'
 
     def connect(self, server, port):
-        self.s = socket.socket()
-        self.s.connect((server, port))
-        print(self.s.recv(1024).decode('ascii'))
+        self.communicator.s = socket.socket()
+        self.communicator.s.connect((server, port))
+        print(self.communicator.s.recv(1024).decode('ascii'))
         msg = 'connection working!'
-        self.s.send(msg.encode('ascii'))
+        self.communicator.s.send(msg.encode('ascii'))
         time.sleep(0.1)
-        #name = 'test'
-        #self.s.send(name.encode('ascii'))
-
-    def communicate(self):
-        if self.events_queue != 'null':
-            self.events_queue = self.events_queue[:-1]
-        #print(self.events_queue)
-        self.s.send(self.events_queue.encode('ascii'))
-        #print('events sent!')
-        temp_status = self.s.recv(1024).decode('ascii')
-        #print('status received!')
-        if temp_status != 'null':
-            temp_status = temp_status.split(',')
-            #print(temp_status)
-            self.status = []
-            self.status.append(int(temp_status[0]))
-            self.status.append(int(temp_status[1]))
-            for i in range(5):
-                self.status.append([])
-            x = 3
-            p = int(temp_status[x-1])
-            for i in range(p):
-                self.status[2].append(temp_status[x+6*i:x+6*i+6])
-            x += 6 * p + 1
-            ba = int(temp_status[x-1])
-            for i in range(ba):
-                self.status[3].append(temp_status[x+3*i:x+3*i+3])
-            x += 3 * ba + 1
-            ma = int(temp_status[x-1])
-            for i in range(ma):
-                self.status[4].append(temp_status[x+3*i:x+3*i+3])
-            x += 3 * ma + 1
-            sa = int(temp_status[x-1])
-            for i in range(sa):
-                self.status[5].append(temp_status[x+3*i:x+3*i+3])
-            x += 3 * sa + 1
-            s = int(temp_status[x-1])
-            for i in range(s):
-                self.status[6].append(temp_status[x+8*i:x+8*i+8])
-
-        #print(self.status)
+        self.communicator.start()
+        # name = 'test'
+        # self.s.send(name.encode('ascii'))
 
     def check_for_level(self):
         if self.level == self.old_level and self.frame > self.level_start_frame:
@@ -288,24 +250,28 @@ class Game:
 
     def start(self):
         self.frame_time = time.time()
-        #self.engine = Engine()
-        #self.engine.players[self.username] = Ship(self.engine, (255, 255, 255))
+        # self.engine = Engine()
+        # self.engine.players[self.username] = Ship(self.engine, (255, 255, 255))
         self.frame = 0
-        self.level_start_frame  = 2 * self.framerate
+        self.level_start_frame = 2 * self.framerate
         self.points = 0
         self.lifes = 3
-        #self.engine.start_level(1)
+        # self.engine.start_level(1)
         self.draw_start_screen()
-        #self.engine.start()
+        # self.engine.start()
+        self.communicate = threading.Event()
+        self.communicator = Communicator(self)
         self.connect('192.168.1.8', 12345)
         self.level = 0
         while True:
+            self.communicate.set()
+            # print('communicate set')
             self.wait_next_frame()
-            #print('done!')
+            # print('done!')
             self.events()
-            self.communicate()
             self.surface.fill((0, 0, 0))
             self.move()
+            # print('drawing...')
             if self.lifes <= 0:
                 break
 
@@ -334,3 +300,52 @@ class Game:
             if self.wait_for_space():
                 break
         self.started = True
+
+
+class Communicator(threading.Thread):
+    def __init__(self, boss):
+        threading.Thread.__init__(self)
+        self.boss = boss
+
+    def run(self):
+        while True:
+            self.boss.communicate.wait()
+            self.boss.communicate.clear()
+            # print('communicating...')
+            if self.boss.events_queue != 'null':
+                self.boss.events_queue = self.boss.events_queue[:-1]
+            # print(self.events_queue)
+            self.s.send(self.boss.events_queue.encode('ascii'))
+            # print('events sent!')
+            temp_status = self.s.recv(1024).decode('ascii')
+            # print('status received!')
+            if temp_status != 'null':
+                temp_status = temp_status.split(',')
+                # print(temp_status)
+                self.boss.status = []
+                self.boss.status.append(int(temp_status[0]))
+                self.boss.status.append(int(temp_status[1]))
+                for i in range(5):
+                    self.boss.status.append([])
+                x = 3
+                p = int(temp_status[x-1])
+                for i in range(p):
+                    self.boss.status[2].append(temp_status[x+6*i:x+6*i+6])
+                x += 6 * p + 1
+                ba = int(temp_status[x-1])
+                for i in range(ba):
+                    self.boss.status[3].append(temp_status[x+3*i:x+3*i+3])
+                x += 3 * ba + 1
+                ma = int(temp_status[x-1])
+                for i in range(ma):
+                    self.boss.status[4].append(temp_status[x+3*i:x+3*i+3])
+                x += 3 * ma + 1
+                sa = int(temp_status[x-1])
+                for i in range(sa):
+                    self.boss.status[5].append(temp_status[x+3*i:x+3*i+3])
+                x += 3 * sa + 1
+                s = int(temp_status[x-1])
+                for i in range(s):
+                    self.boss.status[6].append(temp_status[x+8*i:x+8*i+8])
+
+            # print(self.status)
