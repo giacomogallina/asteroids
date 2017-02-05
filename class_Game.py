@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import pygame, time, sys, socket, threading
+import pygame, time, sys, socket, threading, logging
 from class_Ship import *
 from class_Settings_window import *
 #from class_Engine import Engine
@@ -98,6 +98,9 @@ class Game:
                 #         self.engine.shuttle_2.up = False
         if self.events_queue == '':
             self.events_queue = 'null'
+        self.events_queue = 'test,rt,'
+        if self.frame % 20 == 0:
+            self.events_queue += 'test,st,'
 
     def connect(self, server, port):
         self.communicator.s = socket.socket()
@@ -156,19 +159,23 @@ class Game:
     def move(self):
         #self.check_for_level()
         self.old_level = self.level
-        self.level = self.status[1]
+        try:
+            self.level = self.status[1]
 
-        for i in self.status[2]:
-            #if not i.unused():
-            draw_projectile(self.surface, float(i[0]), float(i[1]), float(i[2]), int(i[3]), int(i[4]), int(i[5]))
-        for i in self.status[3]:
-            draw_asteroid(self.surface, float(i[0]), float(i[1]), float(i[2]), 'big')
-        for i in self.status[4]:
-            draw_asteroid(self.surface, float(i[0]), float(i[1]), float(i[2]), 'medium')
-        for i in self.status[5]:
-            draw_asteroid(self.surface, float(i[0]), float(i[1]), float(i[2]), 'small')
-        for i in self.status[6]:
-            draw_ship(self.surface, float(i[1]), float(i[2]), float(i[3]), i[4], int(i[5]), int(i[6]), int(i[7]))
+            for i in self.status[2]:
+                #if not i.unused():
+                draw_projectile(self.surface, float(i[0]), float(i[1]), float(i[2]), int(i[3]), int(i[4]), int(i[5]))
+            for i in self.status[3]:
+                draw_asteroid(self.surface, float(i[0]), float(i[1]), float(i[2]), 'big')
+            for i in self.status[4]:
+                draw_asteroid(self.surface, float(i[0]), float(i[1]), float(i[2]), 'medium')
+            for i in self.status[5]:
+                draw_asteroid(self.surface, float(i[0]), float(i[1]), float(i[2]), 'small')
+            for i in self.status[6]:
+                draw_ship(self.surface, float(i[1]), float(i[2]), float(i[3]), i[4], int(i[5]), int(i[6]), int(i[7]))
+        except(IndexError, ValueError):
+            logging.error('cought an error while processing this status (move function):\n' + \
+                  str(self.communicator.temp_status) + '\n' + str(self.status))
         self.draw_points()
         self.draw_lifes()
         self.draw_highscore()
@@ -259,9 +266,11 @@ class Game:
         # self.engine.start_level(1)
         self.draw_start_screen()
         # self.engine.start()
+        logging.basicConfig(filename = 'game.log', level = logging.DEBUG)
+        logging.info('\nnew game started at' + str(time.time()) + '\n')
         self.communicate = threading.Event()
         self.communicator = Communicator(self)
-        self.connect('192.168.1.8', 12345)
+        self.connect('192.168.1.8', 12346)
         self.level = 0
         while True:
             self.communicate.set()
@@ -312,40 +321,44 @@ class Communicator(threading.Thread):
             self.boss.communicate.wait()
             self.boss.communicate.clear()
             # print('communicating...')
+            events = 'null'
             if self.boss.events_queue != 'null':
-                self.boss.events_queue = self.boss.events_queue[:-1]
+                events = self.boss.events_queue[:-1]
             # print(self.events_queue)
-            self.s.send(self.boss.events_queue.encode('ascii'))
+            self.s.send(events.encode('ascii'))
             # print('events sent!')
-            temp_status = self.s.recv(1024).decode('ascii')
+            self.temp_status = self.s.recv(1048576).decode('ascii')
             # print('status received!')
-            if temp_status != 'null':
-                temp_status = temp_status.split(',')
+            if self.temp_status != 'null':
+                self.temp_status = self.temp_status.split(',')
                 # print(temp_status)
                 self.boss.status = []
-                self.boss.status.append(int(temp_status[0]))
-                self.boss.status.append(int(temp_status[1]))
-                for i in range(5):
-                    self.boss.status.append([])
-                x = 3
-                p = int(temp_status[x-1])
-                for i in range(p):
-                    self.boss.status[2].append(temp_status[x+6*i:x+6*i+6])
-                x += 6 * p + 1
-                ba = int(temp_status[x-1])
-                for i in range(ba):
-                    self.boss.status[3].append(temp_status[x+3*i:x+3*i+3])
-                x += 3 * ba + 1
-                ma = int(temp_status[x-1])
-                for i in range(ma):
-                    self.boss.status[4].append(temp_status[x+3*i:x+3*i+3])
-                x += 3 * ma + 1
-                sa = int(temp_status[x-1])
-                for i in range(sa):
-                    self.boss.status[5].append(temp_status[x+3*i:x+3*i+3])
-                x += 3 * sa + 1
-                s = int(temp_status[x-1])
-                for i in range(s):
-                    self.boss.status[6].append(temp_status[x+8*i:x+8*i+8])
-
+                try:
+                    self.boss.status.append(int(self.temp_status[0]))
+                    self.boss.status.append(int(self.temp_status[1]))
+                    for i in range(5):
+                        self.boss.status.append([])
+                    x = 3
+                    p = int(self.temp_status[x-1])
+                    for i in range(p):
+                        self.boss.status[2].append(self.temp_status[x+6*i:x+6*i+6])
+                    x += 6 * p + 1
+                    ba = int(self.temp_status[x-1])
+                    for i in range(ba):
+                        self.boss.status[3].append(self.temp_status[x+3*i:x+3*i+3])
+                    x += 3 * ba + 1
+                    ma = int(self.temp_status[x-1])
+                    for i in range(ma):
+                        self.boss.status[4].append(self.temp_status[x+3*i:x+3*i+3])
+                    x += 3 * ma + 1
+                    sa = int(self.temp_status[x-1])
+                    for i in range(sa):
+                        self.boss.status[5].append(self.temp_status[x+3*i:x+3*i+3])
+                    x += 3 * sa + 1
+                    s = int(self.temp_status[x-1])
+                    for i in range(s):
+                        self.boss.status[6].append(self.temp_status[x+8*i:x+8*i+8])
+                except(IndexError):
+                    logging.error('cought an error while processing this status\
+                                   (communicator):\n'+ str(self.temp_status))
             # print(self.status)

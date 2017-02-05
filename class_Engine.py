@@ -41,19 +41,22 @@ class Engine(threading.Thread):
 
     def event_handle(self):
         for i in self.events:
-            # print('event:', i)
-            if i[1][1] == 't':
-                value = True
-            elif i[1][1] == 'f':
-                value = False
-            if i[1][0] == 's':
-                self.players[i[0]].shoot = value
-            elif i[1][0] == 'l':
-                self.players[i[0]].left = value
-            elif i[1][0] == 'u':
-                self.players[i[0]].up = value
-            elif i[1][0] == 'r':
-                self.players[i[0]].right = value
+            try:
+                #print('event:', i)
+                if i[1][1] == 't':
+                    value = True
+                elif i[1][1] == 'f':
+                    value = False
+                if i[1][0] == 's':
+                    self.players[i[0]].shoot = value
+                elif i[1][0] == 'l':
+                    self.players[i[0]].left = value
+                elif i[1][0] == 'u':
+                    self.players[i[0]].up = value
+                elif i[1][0] == 'r':
+                    self.players[i[0]].right = value
+            except(IndexError):
+                print('caught an error while processing these events:\n', self.events)
         self.events = []
         # self.status = ''
 
@@ -103,12 +106,13 @@ class Engine(threading.Thread):
         for i in self.players.keys():
             s = self.players[i]
             new_status[6].append([i, s.X, s.Y, s.D, s.up, s.color[0], s.color[1], s.color[2]])
-        self.status = str(new_status[0]) + ',' + str(new_status[1])
+        temp_status = str(new_status[0]) + ',' + str(new_status[1])
         for i in new_status[2:]:
-            self.status += ',' + str(len(i))
+            temp_status += ',' + str(len(i))
             for j in i:
                 for k in j:
-                    self.status += ',' + str(k)
+                    temp_status += ',' + str(k)
+        self.status = temp_status
         # print(new_status)
         # print(self.status)
 
@@ -133,9 +137,7 @@ class Listener(threading.Thread):
         self.c.send(msg.encode('ascii'))
         print(self.c.recv(1024).decode('ascii'))
         self.boss.players['test'] = Ship(self.boss, (255, 255, 255))
-
-        keep = True
-        while keep:
+        while True:
             msg = self.c.recv(1024).decode('ascii')
             # print('events received:\n', msg)
             if msg != 'null':
@@ -143,7 +145,11 @@ class Listener(threading.Thread):
                 for i in range(len(msg)//2):
                     self.boss.events.append([msg[2*i], msg[2*i+1]])
             status = self.boss.status.encode('ascii')
-            self.c.send(status)
+            try:
+                self.c.send(status)
+            except(BrokenPipeError):
+                print('client disconnected')
+                break
             # print('status sent!')
         self.c.close()
 
@@ -153,7 +159,7 @@ class Connections_accepter(threading.Thread):
         threading.Thread.__init__(self)
         self.boss = boss
         self.s = socket.socket()
-        self.s.bind(('192.168.1.8', 12345))
+        self.s.bind(('192.168.1.8', 12346))
         self.start()
 
     def run(self):
