@@ -1,6 +1,7 @@
 import math, threading, socket
 from class_Ship import *
 
+
 class Engine(threading.Thread):
 
     def __init__(self):
@@ -10,9 +11,11 @@ class Engine(threading.Thread):
         self.Ps = []
         self.tick_rate = 250
         self.tick_duration = 1 / self.tick_rate
-        self.level_start_tick = 0
+        self.level_start_tick = -1
         self.tick = 0
-        self.events = []  # list of lists like [user, command], where command is ut, lt, rt, st, uf, lf, rf
+        # list of lists like [user, command], where command is
+        # ut, lt, rt, st, uf, lf, rf
+        self.events = []
         self.status = 'null'
         self.players = {}
         self.level = 0
@@ -42,7 +45,7 @@ class Engine(threading.Thread):
     def event_handle(self):
         for i in self.events:
             try:
-                #print('event:', i)
+                # print('event:', i)
                 if i[1][1] == 't':
                     value = True
                 elif i[1][1] == 'f':
@@ -56,7 +59,8 @@ class Engine(threading.Thread):
                 elif i[1][0] == 'r':
                     self.players[i[0]].right = value
             except(IndexError):
-                print('caught an error while processing these events:\n', self.events)
+                print('caught an error while processing these events:\n',
+                      self.events)
         self.events = []
         # self.status = ''
 
@@ -73,8 +77,8 @@ class Engine(threading.Thread):
                 return False
         if self.level_start_tick < self.tick:
             self.level_start_tick = self.tick + 2 * self.tick_rate
-        if self.tick == self.level_start_tick:
             self.level += 1
+        if self.tick == self.level_start_tick:
             self.start_level(self.level)
 
     def move(self):
@@ -95,7 +99,8 @@ class Engine(threading.Thread):
         new_status[1] = self.level
         for i in self.Ps:
             if not i.unused():
-                new_status[2].append([i.X, i.Y, i.D, i.color[0], i.color[1], i.color[2]])
+                new_status[2].append([i.X, i.Y, i.D, i.color[0],
+                                      i.color[1], i.color[2]])
 
         types = ['big', 'medium', 'small']
         for i in range(len(types)):
@@ -105,7 +110,9 @@ class Engine(threading.Thread):
 
         for i in self.players.keys():
             s = self.players[i]
-            new_status[6].append([i, s.X, s.Y, s.D, s.up, s.color[0], s.color[1], s.color[2]])
+            if not s.pulsing or (time.time() - s.pulse_time) % 0.5 <= 0.3:
+                new_status[6].append([i, s.X, s.Y, s.D, s.up, s.color[0],
+                                      s.color[1], s.color[2]])
         temp_status = str(new_status[0]) + ',' + str(new_status[1])
         for i in new_status[2:]:
             temp_status += ',' + str(len(i))

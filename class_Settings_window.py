@@ -372,7 +372,7 @@ class Settings_window():
         h4 = HBox()
         h4.widgets = [s5, l2]
 
-        quit_button = Button(self.surface, 'Quit', self.quit, border = False)
+        quit_button = Button(self.surface, 'Quit', self.boss.quit, border = False)
         apply_button = Button(self.surface, 'Apply', self.apply, border = False)
         s4 = Space(sliders_width-200, 0) #aggiustare
         h3 = HBox()
@@ -418,4 +418,4 @@ class Settings_window():
         pygame.display.update()
 
     def quit(self):
-        sys.exit()
+        self.boss.quit()
