@@ -12,8 +12,9 @@ class Ship:
     shoot = False
     pulsing = True
 
-    def __init__(self, boss, color = (255, 255, 255)):
+    def __init__(self, boss, name, color=(255, 255, 255)):
         self.boss = boss
+        self.name = name
         self.X = boss.window_width/2
         self.Y = boss.window_height/2
         self.color = color
@@ -40,35 +41,16 @@ class Ship:
             self.boss.points -= 1
             for i in self.boss.Ps:
                 if i.unused():
-                    i.shoot(self.X, self.Y, self.Vx, self.Vy, self.D, self.color)
+                    i.shoot(self.X, self.Y, self.Vx, self.Vy, self.D,
+                            self.color)
                     self.shoot = False
                     break
-
-    def draw(self, surface):
-        if not self.pulsing or (time.time() - self.pulse_time)%0.5 >= 0.2:
-            pygame.draw.lines(surface, self.color, True, (\
-            (self.X + 10 * math.cos(self.D), self.Y  - 10 * math.sin(self.D)),\
-            (self.X + 10 * math.cos((self.D + math.pi*3/4)%(2*math.pi)), self.Y  - 10 * math.sin((self.D + math.pi*3/4)%(2*math.pi))),\
-            (self.X + 10 * math.cos((self.D + math.pi*5/4)%(2*math.pi)), self.Y  - 10 * math.sin((self.D + math.pi*5/4)%(2*math.pi))),\
-            ), 1)
-            if self.up:
-                pygame.draw.lines(surface, self.color, True, (\
-                    (self.X - 14 * math.cos(self.D), \
-                     self.Y + 14 * math.sin(self.D)),\
-                    (self.X - 14 * math.cos(self.D) \
-                     + 7 * math.cos(self.D-math.pi/4), \
-                     self.Y + 14 * math.sin(self.D)\
-                     - 7 * math.sin(self.D-math.pi/4)),\
-                    (self.X - 14 * math.cos(self.D) \
-                     + 7 * math.cos(self.D+math.pi/4), \
-                     self.Y + 14 * math.sin(self.D)\
-                     - 7 * math.sin(self.D+math.pi/4))), 1)
-
 
     def is_destroied(self):
         if not self.pulsing:
             for i in self.boss.As:
-                if math.hypot(self.X - i.X, self.Y - i.Y) <= i.radius[i.Type] +5:
+                if math.hypot(self.X - i.X, self.Y - i.Y) <= i.radius[i.Type] \
+                 + 5:
                     self.pulsing = True
                     self.pulse_time = time.time()
                     self.X = self.boss.window_width/2

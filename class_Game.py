@@ -64,37 +64,38 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    self.events_queue += self.username + ',lt,'
+                    self.events_queue += self.ID + ',lt,'
                 elif event.key == pygame.K_RIGHT:
-                    self.events_queue += self.username + ',rt,'
+                    self.events_queue += self.ID + ',rt,'
                 elif event.key == pygame.K_UP:
-                    self.events_queue += self.username + ',ut,'
+                    self.events_queue += self.ID + ',ut,'
                 elif event.key == pygame.K_SPACE:
-                    self.events_queue += self.username + ',st,'
+                    self.events_queue += self.ID + ',st,'
                 elif event.key == pygame.K_ESCAPE:
                     self.draw_options()
                 elif event.key == pygame.K_TAB:
                     self.draw_players()
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT:
-                    self.events_queue += self.username + ',lf,'
+                    self.events_queue += self.ID + ',lf,'
                 elif event.key == pygame.K_RIGHT:
-                    self.events_queue += self.username + ',rf,'
+                    self.events_queue += self.ID + ',rf,'
                 elif event.key == pygame.K_UP:
-                    self.events_queue += self.username + ',uf,'
+                    self.events_queue += self.ID + ',uf,'
         if self.events_queue == '':
             self.events_queue = 'null'
         if self.auto_move:
-            self.events_queue = 'test,rt,'
+            self.events_queue = str(self.ID) + ',rt,'
             if self.frame % 20 == 0:
-                self.events_queue += 'test,st,'
+                self.events_queue += str(self.ID) + 'test,st,'
 
     def connect(self, server, port):
         self.communicator.s = socket.socket()
         self.communicator.s.connect((server, port))
         print(self.communicator.s.recv(1024).decode('ascii'))
-        msg = 'connection working!'
+        msg = 'connection working!' + str(self.username)
         self.communicator.s.send(msg.encode('ascii'))
+        self.ID = self.communicator.s.recv(1024).decode('ascii')
         time.sleep(0.1)
         self.communicator.start()
         # name = 'test'

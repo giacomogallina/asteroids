@@ -1,4 +1,4 @@
-import math, threading, socket
+import math, threading, socket, random
 from class_Ship import *
 
 
@@ -123,6 +123,13 @@ class Engine(threading.Thread):
         # print(new_status)
         # print(self.status)
 
+    def make_new_id(self):
+        while True:
+            a = random.randint(0, 1000000)
+            if a not in self.players.keys():
+                return str(a)
+
+
     def run(self):
         self.next_tick_time = time.time()
         while True:
@@ -138,12 +145,17 @@ class Listener(threading.Thread):
         self.boss = boss
         self.c, self.addr = client
         self.start()
+        self.name = 'null'
 
     def run(self):
         msg = 'Thank you for connecting'
         self.c.send(msg.encode('ascii'))
-        print(self.c.recv(1024).decode('ascii'))
-        self.boss.players['test'] = Ship(self.boss, (255, 255, 255))
+        answer = self.c.recv(1024).decode('ascii').split(',')[0]
+        print(answer[:19])
+        self.name = answer[19:]
+        ID = self.boss.make_new_id()
+        self.c.send(ID.encode('ascii'))
+        self.boss.players[ID] = Ship(self.boss, self.name, (255, 255, 255))
         while True:
             msg = self.c.recv(1024).decode('ascii')
             # print('events received:\n', msg)
@@ -155,6 +167,7 @@ class Listener(threading.Thread):
             try:
                 self.c.send(status)
             except(BrokenPipeError):
+                self.boss.players.pop(ID)
                 print('client disconnected')
                 break
             # print('status sent!')
