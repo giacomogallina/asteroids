@@ -29,10 +29,6 @@ class Asteroid:
             self.X = (self.X + self.Vx)%self.boss.window_width
             self.Y = (self.Y + self.Vy)%self.boss.window_height
 
-    def draw(self, surface):
-        if not self.dead:
-            pygame.draw.circle(surface, (255, 255, 255), (int(self.X), int(self.Y)), self.radius[self.Type], 1)
-
     def is_destroied(self):
         if not self.dead:
             for i in self.boss.Ps:
