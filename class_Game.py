@@ -137,11 +137,10 @@ class Game:
                                             str(self.highscore))[0])/2, 10))
 
     def draw_options(self):
-        # print("options hasn't been implemented yet")
-
+        pygame.mouse.set_visible(True)
         s = Settings_window(self)
-
         self.frame_time = time.time()
+        pygame.mouse.set_visible(False)
 
     def draw_players(self):
         print('test')
@@ -236,6 +235,7 @@ class Game:
         self.level_start_frame = 2 * self.framerate
         self.points = 0
         self.lifes = 3
+        pygame.mouse.set_visible(False)
         self.draw_start_screen()
         logging.basicConfig(filename='game.log', level=logging.DEBUG)
         logging.info('\nnew game started at ' + str(time.time()) + '\n')
