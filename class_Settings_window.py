@@ -1,5 +1,5 @@
 import sys, pygame, class_Ship, time, random
-#from class_Ship import *
+# from class_Ship import *
 
 pygame.init()
 points_font = pygame.font.Font(None, 36)
@@ -34,7 +34,6 @@ class VBox():
             i.check(pos)
 
 
-
 class HBox():
     X, Y = 0, 0
     widgets = []
@@ -60,11 +59,10 @@ class HBox():
             i.check(pos)
 
 
-
 class Frame():
     X, Y = 0, 0
 
-    def __init__(self, widget, frame = False, border = 5, surface = ''):
+    def __init__(self, widget, frame=True, border=1, surface=''):
         self.widget = widget
         self.frame = frame
         self.border = border
@@ -74,16 +72,16 @@ class Frame():
         self.widget.X = self.X + self.border
         self.widget.Y = self.Y + self.border
         widget_size = self.widget.set_size()
-        self.size = [widget_size[0] + 2 * self.border, \
+        self.size = [widget_size[0] + 2 * self.border,
                      widget_size[1] + 2 * self.border]
         return self.size
 
     def draw(self):
-        if self.border:
-            pygame.draw.lines(self.surface, white, True,\
-                              ((self.X, self.Y),\
-                               (self.X, self.Y + self.size[1]),\
-                               (self.X + self.size[0], self.Y + self.size[1]),\
+        if self.frame:
+            pygame.draw.lines(self.surface, white, True,
+                              ((self.X, self.Y),
+                               (self.X, self.Y + self.size[1]),
+                               (self.X + self.size[0], self.Y + self.size[1]),
                                (self.X + self.size[0], self.Y)))
         self.widget.draw()
 
@@ -91,11 +89,10 @@ class Frame():
         self.widget.check(pos)
 
 
-
 class Label():
     X, Y = 0, 0
 
-    def __init__(self, surface, text, frame = 5):
+    def __init__(self, surface, text, frame=5):
         self.text = text
         self.surface = surface
         self.frame = frame
@@ -118,7 +115,6 @@ class Label():
 
     def check(self, pos):
         pass
-
 
 
 class Button():
@@ -178,7 +174,6 @@ class Button():
             self.function()
 
 
-
 class Main_window():
     def __init__(self, surface):
         self.surface = surface
@@ -194,7 +189,6 @@ class Main_window():
         self.widget.check(pos)
 
 
-
 class Space():
     X, Y = 0, 0
     def __init__(self, width, height):
@@ -208,7 +202,6 @@ class Space():
 
     def check(self, pos):
         pass
-
 
 
 class Line():
@@ -274,7 +267,6 @@ class Bar():
                              / 100 + self.min_value)
 
 
-
 class Slider():
     X, Y = 0, 0
 
@@ -330,7 +322,6 @@ if __name__ == '__main__':
     pass
 
 
-
 class Settings_window():
 
     def __init__(self, boss):
@@ -338,7 +329,7 @@ class Settings_window():
         self.surface = self.boss.surface
 
         v = VBox()
-        self.f = Frame(v, surface = self.surface, border = True)
+        self.f = Frame(v, surface=self.surface)
         self.f.X = self.boss.window_width // 4
         self.f.Y = self.boss.window_height // 4
 
@@ -358,8 +349,8 @@ class Settings_window():
 
         htitle = HBox()
         title = Label(self.surface, 'Settings')
-        exit_button = Button(self.surface, 'X', self.stop, border = False)
-        s1 = Space(self.f.X - 100, 0) #aggiustare
+        exit_button = Button(self.surface, 'X', self.stop, border=False)
+        s1 = Space(self.f.X - 100, 0)  # aggiustare
         htitle.widgets = [exit_button, s1, title]
 
         s2 = Space(5, 0)
@@ -372,13 +363,13 @@ class Settings_window():
         h4 = HBox()
         h4.widgets = [s5, l2]
 
-        quit_button = Button(self.surface, 'Quit', self.boss.quit, border = False)
-        apply_button = Button(self.surface, 'Apply', self.apply, border = False)
-        s4 = Space(sliders_width-200, 0) #aggiustare
+        quit_button = Button(self.surface, 'Quit', self.boss.quit, border=False)
+        apply_button = Button(self.surface, 'Apply', self.apply, border=False)
+        s4 = Space(sliders_width - 200, 0)  # aggiustare
         h3 = HBox()
         h3.widgets = [s4, apply_button, Space(20, 0), quit_button]
 
-        s3 = Space(0, self.boss.window_height//2 - 200) #aggiustare
+        s3 = Space(0, self.boss.window_height//2 - 200)  # aggiustare
 
         v.widgets = [htitle, h2, s_w, s_h, s_f, s_p, s3, h4, h3]
 
@@ -392,7 +383,7 @@ class Settings_window():
             event = pygame.event.poll()
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:
-                    #print('event!')
+                    # print('event!')
                     self.f.check(pygame.mouse.get_pos())
             self.surface.fill(black)
             self.f.draw()
@@ -405,15 +396,15 @@ class Settings_window():
         old_framerate = self.boss.framerate
         old_players = self.boss.players
         settings_file = open('settings.txt', 'w')
-        settings_file.write(str(self.boss.highscore)+'\n'\
-                            +str(self.s[0].get_value())+'\n'+\
-                            str(self.s[1].get_value())+'\n'\
-                            +str(self.s[2].get_value())+'\n'+\
+        settings_file.write(str(self.boss.highscore) + '\n' +
+                            str(self.s[0].get_value()) + '\n' +
+                            str(self.s[1].get_value()) + '\n' +
+                            +str(self.s[2].get_value()) + '\n' +
                             str(self.s[3].get_value()))
         settings_file.close()
         self.boss.import_settings()
-        self.boss.surface = pygame.display.set_mode\
-        ((self.boss.window_width, self.boss.window_height))
+        self.boss.surface = pygame.display.set_mode((self.boss.window_width,
+                                                     self.boss.window_height))
         self.boss.frame_duration = 1.0 / self.boss.framerate
         pygame.display.update()
 

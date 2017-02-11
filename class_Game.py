@@ -19,6 +19,7 @@ class Game:
     events_queue = ''
     status = [0, 0, [], [], [], [], []]
     auto_move = False
+    showing_players = False
 
     def __init__(self):
         global highscore, window_width, window_height, framerate, \
@@ -74,7 +75,7 @@ class Game:
                 elif event.key == pygame.K_ESCAPE:
                     self.draw_options()
                 elif event.key == pygame.K_TAB:
-                    self.draw_players()
+                    self.showing_players = True
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT:
                     self.events_queue += self.ID + ',lf,'
@@ -82,6 +83,8 @@ class Game:
                     self.events_queue += self.ID + ',rf,'
                 elif event.key == pygame.K_UP:
                     self.events_queue += self.ID + ',uf,'
+                elif event.key == pygame.K_TAB:
+                    self.showing_players = False
         if self.events_queue == '':
             self.events_queue = 'null'
         if self.auto_move:
@@ -142,8 +145,16 @@ class Game:
         self.frame_time = time.time()
         pygame.mouse.set_visible(False)
 
-    def draw_players(self):
-        print('test')
+    def show_players(self):
+        if len(self.status[6]) > 0:
+            v = VBox()
+            v.widgets = []
+            f = Frame(v, surface=self.surface)
+            f.Y = 36
+            for i in self.status[6]:
+                v.widgets.append(Label(self.surface, i[0]))
+            f.set_size()
+            f.draw()
 
     def quit(self):
         self.communicator.keep = False
@@ -179,6 +190,8 @@ class Game:
         self.draw_points()
         self.draw_lifes()
         self.draw_highscore()
+        if self.showing_players:
+            self.show_players()
         pygame.display.update()
 
     def wait_for_space(self):

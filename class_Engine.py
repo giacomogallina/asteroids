@@ -110,8 +110,8 @@ class Engine(threading.Thread):
 
         for i in self.players.keys():
             s = self.players[i]
-            if not s.pulsing or (time.time() - s.pulse_time) % 0.5 <= 0.3:
-                new_status[6].append([i, s.X, s.Y, s.D, s.up, s.color[0],
+            if not s.pulsing or (time.time() - s.pulse_time) % 0.5 >= 0.3:
+                new_status[6].append([s.name, s.X, s.Y, s.D, s.up, s.color[0],
                                       s.color[1], s.color[2]])
         temp_status = str(new_status[0]) + ',' + str(new_status[1])
         for i in new_status[2:]:
@@ -128,7 +128,6 @@ class Engine(threading.Thread):
             a = random.randint(0, 1000000)
             if a not in self.players.keys():
                 return str(a)
-
 
     def run(self):
         self.next_tick_time = time.time()
