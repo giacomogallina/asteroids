@@ -1,4 +1,4 @@
-import math, random, pygame
+import math, random
 
 class Asteroid:
     global window_width, window_height, points, highscore, settings_file

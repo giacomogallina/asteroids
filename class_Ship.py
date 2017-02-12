@@ -1,6 +1,6 @@
 from class_Projectile import Projectile
 from class_Asteroid import Asteroid
-import math, time, pygame
+import math, time
 
 class Ship:
     D = math.pi/2

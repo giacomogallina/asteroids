@@ -1,4 +1,4 @@
-import math, time, pygame
+import math, time
 
 class Projectile:
     global window_width, window_height
