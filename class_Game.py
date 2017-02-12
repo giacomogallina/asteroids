@@ -239,7 +239,6 @@ class Game:
             pygame.display.update()
             if self.frame == death_frame + 2 * self.framerate:
                 break
-
         return True
 
     def start(self):
