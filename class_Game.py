@@ -36,20 +36,18 @@ class Game:
 
     def import_settings(self):
         try:
-            settings_file = open('settings.txt', 'r+')
+            settings_file = open('client_settings.txt', 'r+')
         except:
-            create = open('settings.txt', 'w')
-            create.write('0\n600\n480\n30\n1')
+            create = open('client_settings.txt', 'w')
+            create.write('800\n800\n60')
             create.close()
-            settings_file = open('settings.txt', 'r+')
+            settings_file = open('client_settings.txt', 'r+')
 
         settings = settings_file.readlines()
         settings_file.close()
-        self.highscore = int(settings[0])
-        self.window_width = int(settings[1])
-        self.window_height = int(settings[2])
-        self.framerate = int(settings[3])
-        self.players = int(settings[4])
+        self.window_width = int(settings[0])
+        self.window_height = int(settings[1])
+        self.framerate = int(settings[2])
 
     def wait_next_frame(self):
         while time.time() < self.frame_time + self.frame_duration:
@@ -182,6 +180,7 @@ class Game:
             for i in self.status[6]:
                 draw_ship(self.surface, float(i[1]), float(i[2]), float(i[3]),
                           i[4], int(i[5]), int(i[6]), int(i[7]))
+            self.points, self.highscore = self.status[7:8]
         except(IndexError, ValueError):
             logging.error('cought an error while processing this status \
                           (move function):\n' +
@@ -340,6 +339,9 @@ class Communicator(threading.Thread):
                     s = int(self.temp_s[x-1])
                     for i in range(s):
                         self.boss.status[6].append(self.temp_s[x+8*i:x+8*i+8])
+                    x += 8 * s + 1
+                    for i in self.temp_s[x:]:
+                        self.boss.status.append(i)
                 except(IndexError):
                     logging.error('cought an error while processing this status\
                                    (communicator):\n' + str(self.temp_s))

@@ -1,3 +1,4 @@
 __pycache__/
-settings.txt
+client_settings.txt
+server_settings.txt
 game.log

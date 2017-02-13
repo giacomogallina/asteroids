@@ -9,7 +9,7 @@ class Engine(threading.Thread):
         self.listeners = []
         self.connections_accepter = Connections_accepter(self)
         self.Ps = []
-        self.tick_rate = 250
+        self.import_settings()
         self.tick_duration = 1 / self.tick_rate
         self.level_start_tick = -1
         self.tick = 0
@@ -20,11 +20,8 @@ class Engine(threading.Thread):
         self.players = {}
         self.level = 0
         self.As = []
-        self.window_width = 800
-        self.window_height = 800
         self.lifes = 5
         self.points = 0
-        self.highscore = 0
         self.acceleration = 1000.0 / (self.tick_rate**2)
         self.friction = 0.8 ** (1.0/self.tick_rate)
         self.rotation_speed = 5.0 / self.tick_rate
@@ -32,6 +29,22 @@ class Engine(threading.Thread):
         self.asteroid_speed = 200.0 / self.tick_rate
         for i in range(0, 8):
             self.Ps.append(Projectile(self))
+
+    def import_settings(self):
+        try:
+            settings_file = open('server_settings.txt', 'r+')
+        except:
+            create = open('server_settings.txt', 'w')
+            create.write('0\n800\n800\n250')
+            create.close()
+            settings_file = open('server_settings.txt', 'r+')
+
+        settings = settings_file.readlines()
+        settings_file.close()
+        self.highscore = int(settings[0])
+        self.window_width = int(settings[1])
+        self.window_height = int(settings[2])
+        self.tick_rate = int(settings[3])
 
     def wait_next_tick(self):
         while time.time() < self.next_tick_time + self.tick_duration:
@@ -119,6 +132,7 @@ class Engine(threading.Thread):
             for j in i:
                 for k in j:
                     temp_status += ',' + str(k)
+        temp_status += ',' + str(self.points) + ',' + str(self.highscore)
         self.status = temp_status
         # print(new_status)
         # print(self.status)

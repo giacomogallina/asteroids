@@ -122,12 +122,12 @@ class Button():
     background_color = black
     text_color = white
 
-    def __init__(self, surface, text, function, frame = 5, border = True):
+    def __init__(self, surface, text, function, frame=5, border=True):
         self.function = function
         self.text = text
         self.surface = surface
         self.frame = frame
-        #print (self.frame)
+        # print (self.frame)
         self.border = border
         self.make_text()
 
@@ -153,19 +153,19 @@ class Button():
             self.text_color = white
             self.box = points_font.render(self.text, 0, self.text_color)
 
-        pygame.draw.rect(self.surface, self.background_color,\
+        pygame.draw.rect(self.surface, self.background_color,
                          (self.X, self.Y, self.size[0], self.size[1]))
         if self.border:
-            pygame.draw.lines(self.surface, self.text_color, True,\
-                              ((self.X, self.Y),\
-                               (self.X, self.Y + self.size[1]),\
-                               (self.X + self.size[0], self.Y + self.size[1]),\
+            pygame.draw.lines(self.surface, self.text_color, True,
+                              ((self.X, self.Y),
+                               (self.X, self.Y + self.size[1]),
+                               (self.X + self.size[0], self.Y + self.size[1]),
                                (self.X + self.size[0], self.Y)))
         self.surface.blit(self.box, (self.X + self.frame, self.Y + self.frame))
 
     def below_mouse(self, pos):
         if pos[0] >= self.X and pos[0] <= self.X + self.size[0] and\
-        pos[1] >= self.Y and pos[1] <= self.Y + self.size[1]:
+         pos[1] >= self.Y and pos[1] <= self.Y + self.size[1]:
             return True
         return False
 
@@ -191,6 +191,7 @@ class Main_window():
 
 class Space():
     X, Y = 0, 0
+
     def __init__(self, width, height):
         self.size = [width, height]
 
@@ -207,7 +208,7 @@ class Space():
 class Line():
     X, Y = 0, 0
 
-    def __init__(self, surface, lenght, vertical = False):
+    def __init__(self, surface, lenght, vertical=False):
         self.surface = surface
         self.lenght = lenght
         self.vertical = vertical
@@ -245,25 +246,26 @@ class Bar():
 
     def set_cursor_pos(self):
         self.cursor_pos = 100 * (self.value - self.min_value)\
-        / (self.max_value - self.min_value)
+         / (self.max_value - self.min_value)
 
     def draw(self):
         self.set_cursor_pos()
-        pygame.draw.rect(self.surface, grey, (self.X + 10, self.Y + 10, 100, 10))
-        pygame.draw.rect(self.surface, white, \
+        pygame.draw.rect(self.surface, grey, (self.X + 10, self.Y + 10,
+                                              100, 10))
+        pygame.draw.rect(self.surface, white,
                          (self.X + self.cursor_pos + 5, self.Y, 10, 30))
 
     def below_mouse(self, pos):
         if pos[0] >= self.X + 10 and pos[0] <= self.X + 110 and\
-        pos[1] >= self.Y + 10 and pos[1] <= self.Y + 20:
+         pos[1] >= self.Y + 10 and pos[1] <= self.Y + 20:
             return True
         return False
 
     def check(self, pos):
         if self.below_mouse(pos):
             self.cursor_pos = pos[0] - self.X - 10
-            self.value = int((self.cursor_pos) * \
-                             (self.max_value - self.min_value)\
+            self.value = int((self.cursor_pos) *
+                             (self.max_value - self.min_value)
                              / 100 + self.min_value)
 
 
@@ -275,15 +277,15 @@ class Slider():
         self.h = HBox()
         self.h2 = HBox()
         self.bar = Bar(surface, min_value, max_value)
-        self.plus_button = Button(surface, '+', self.plus, border = False)
-        self.less_button = Button(surface, '-', self.less, border = False)
+        self.plus_button = Button(surface, '+', self.plus, border=False)
+        self.less_button = Button(surface, '-', self.less, border=False)
         self.l = Label(surface, text)
         self.v = Label(surface, str(min_value))
         self.s = Space(50, 0)
         self.h.widgets = [self.l, self.v, self.s]
         self.h2.widgets = [self.less_button, self.bar, self.plus_button]
-        #self.h2.set_size()
-        #print(self.h2.size)
+        # self.h2.set_size()
+        # print(self.h2.size)
 
     def set_size(self):
         self.h.X, self.h.Y = self.X, self.Y
@@ -334,18 +336,16 @@ class Settings_window():
         self.f.Y = self.boss.window_height // 4
 
         sliders_width = self.boss.window_width // 2 - 10
-        #print(sliders_width)
+        # print(sliders_width)
         s_w = Slider(self.surface, sliders_width, 320, 3840, 'Window Width')
         s_h = Slider(self.surface, sliders_width, 240, 2160, 'Window Height')
         s_f = Slider(self.surface, sliders_width, 30, 240, 'Framerate')
-        s_p = Slider(self.surface, sliders_width, 1, 2, 'Players')
 
         s_w.set_value(self.boss.window_width)
         s_h.set_value(self.boss.window_height)
         s_f.set_value(self.boss.framerate)
-        s_p.set_value(self.boss.players)
 
-        self.s = [s_w, s_h, s_f, s_p]
+        self.s = [s_w, s_h, s_f]
 
         htitle = HBox()
         title = Label(self.surface, 'Settings')
@@ -363,7 +363,7 @@ class Settings_window():
         h4 = HBox()
         h4.widgets = [s5, l2]
 
-        quit_button = Button(self.surface, 'Quit', self.boss.quit, border=False)
+        quit_button = Button(self.surface, 'Quit', self.quit, border=False)
         apply_button = Button(self.surface, 'Apply', self.apply, border=False)
         s4 = Space(sliders_width - 200, 0)  # aggiustare
         h3 = HBox()
@@ -371,7 +371,7 @@ class Settings_window():
 
         s3 = Space(0, self.boss.window_height//2 - 200)  # aggiustare
 
-        v.widgets = [htitle, h2, s_w, s_h, s_f, s_p, s3, h4, h3]
+        v.widgets = [htitle, h2, s_w, s_h, s_f, s3, h4, h3]
 
         self.run()
 
@@ -394,13 +394,11 @@ class Settings_window():
 
     def apply(self):
         old_framerate = self.boss.framerate
-        old_players = self.boss.players
-        settings_file = open('settings.txt', 'w')
+        settings_file = open('client_settings.txt', 'w')
         settings_file.write(str(self.boss.highscore) + '\n' +
                             str(self.s[0].get_value()) + '\n' +
                             str(self.s[1].get_value()) + '\n' +
-                            +str(self.s[2].get_value()) + '\n' +
-                            str(self.s[3].get_value()))
+                            +str(self.s[2].get_value()))
         settings_file.close()
         self.boss.import_settings()
         self.boss.surface = pygame.display.set_mode((self.boss.window_width,
