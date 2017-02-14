@@ -17,9 +17,9 @@ class Asteroid:
         self.boss = boss
 
     def generate(self, position):
-        self.X = (random.randint(0, self.boss.window_width // 2) - self.boss.window_width/4) % self.boss.window_width
-        self.Y = (random.randint(0, self.boss.window_height // 2) - self.boss.window_height/4) % self.boss.window_height
-        self.Vx = (random.random() * 2 -1) * self.boss.asteroid_speed
+        self.X = (random.randint(0, self.boss.window_width // 2) - self.boss.window_width//4) % self.boss.window_width
+        self.Y = (random.randint(0, self.boss.window_height // 2) - self.boss.window_height//4) % self.boss.window_height
+        self.Vx = (random.random() * 2 - 1) * self.boss.asteroid_speed
         self.Vy = (self.boss.asteroid_speed ** 2 - self.Vx ** 2) ** 0.5
         self.dead = False
         self.list_position = position
