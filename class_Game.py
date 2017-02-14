@@ -17,7 +17,7 @@ class Game:
     Ps = []
     username = 'test'
     events_queue = ''
-    status = [0, 0, [], [], [], [], []]
+    status = [0, 0, [], [], [], [], [], 0, 0]
     auto_move = False
     showing_players = False
 
@@ -180,11 +180,11 @@ class Game:
             for i in self.status[6]:
                 draw_ship(self.surface, float(i[1]), float(i[2]), float(i[3]),
                           i[4], int(i[5]), int(i[6]), int(i[7]))
-            self.points, self.highscore = self.status[7:8]
+            self.points, self.highscore = self.status[7:9]
         except(IndexError, ValueError):
             logging.error('cought an error while processing this status \
                           (move function):\n' +
-                          str(self.communicator.temp_s) + '\n' +
+                          # str(self.communicator.temp_s) + '\n' +
                           str(self.status))
         self.draw_points()
         self.draw_lifes()
@@ -319,6 +319,8 @@ class Communicator(threading.Thread):
                     self.boss.status.append(int(self.temp_s[1]))
                     for i in range(5):
                         self.boss.status.append([])
+                    self.boss.status.append(int(self.temp_s[-2]))
+                    self.boss.status.append(int(self.temp_s[-1]))
                     x = 3
                     p = int(self.temp_s[x-1])
                     for i in range(p):

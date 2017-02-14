@@ -146,10 +146,17 @@ class Engine(threading.Thread):
     def run(self):
         self.next_tick_time = time.time()
         while True:
-            self.event_handle()
-            self.wait_next_tick()
-            self.move()
-            self.make_status()
+            if self.tick % 250 == 0:
+                print('')
+                test(self.event_handle)
+                test(self.wait_next_tick)
+                test(self.move)
+                test(self.make_status)
+            else:
+                self.event_handle()
+                self.wait_next_tick()
+                self.move()
+                self.make_status()
 
 
 class Listener(threading.Thread):
@@ -199,3 +206,9 @@ class Connections_accepter(threading.Thread):
         while True:
             self.s.listen(5)
             self.boss.listeners.append(Listener(self.s.accept(), self.boss))
+
+
+def test(func):
+    start = time.time()
+    func()
+    print(time.time()-start)
