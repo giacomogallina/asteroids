@@ -49,25 +49,33 @@ class Ship:
     def is_destroied(self):
         if not self.pulsing:
             for i in self.boss.As:
-                if (self.X - i.X)**2 + (self.Y - i.Y)**2 <=\
-                 (i.radius[i.Type] + 5)**2:
-                    self.pulsing = True
-                    self.pulse_time = time.time()
-                    self.X = self.boss.window_width/2
-                    self.Y = self.boss.window_height/2
-                    self.D = math.pi/2
-                    self.Vx = 0
-                    self.Vy = 0
-                    self.boss.lifes -= 1
-                    break
+                if not i.dead:
+                    a = self.X - i.X
+                    b = self.Y - i.Y
+                    c = i.radius[i.Type] + 5
+                    if a + b <= c:
+                        if a**2 + b**2 <= c**2:
+                            self.pulsing = True
+                            self.pulse_time = time.time()
+                            self.X = self.boss.window_width/2
+                            self.Y = self.boss.window_height/2
+                            self.D = math.pi/2
+                            self.Vx = 0
+                            self.Vy = 0
+                            self.boss.lifes -= 1
+                            break
             for i in self.boss.Ps:
-                if math.hypot(self.X - i.X, self.Y - i.Y) <= 8:
-                    self.pulsing = True
-                    self.pulse_time = time.time()
-                    self.X = self.boss.window_width/2
-                    self.Y = self.boss.window_height/2
-                    self.D = math.pi/2
-                    self.Vx = 0
-                    self.Vy = 0
-                    self.boss.lifes -= 1
-                    break
+                if not i.unused():
+                    a = self.X - i.X
+                    b = self.Y - i.Y
+                    if a + b <= 8:
+                        if a**2 + b**2 <= 8**2:
+                            self.pulsing = True
+                            self.pulse_time = time.time()
+                            self.X = self.boss.window_width/2
+                            self.Y = self.boss.window_height/2
+                            self.D = math.pi/2
+                            self.Vx = 0
+                            self.Vy = 0
+                            self.boss.lifes -= 1
+                            break

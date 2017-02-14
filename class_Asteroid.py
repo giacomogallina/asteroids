@@ -1,9 +1,10 @@
 import math, random
 
+
 class Asteroid:
     global window_width, window_height, points, highscore, settings_file
-    mass = {'big' : 4, 'medium' : 2, 'small' : 1}
-    radius = {'big' : 50, 'medium' : 25, 'small' : 15}
+    mass = {'big': 4, 'medium': 2, 'small': 1}
+    radius = {'big': 50, 'medium': 25, 'small': 15}
     Type = 'big'
     X = -100
     Y = -100
@@ -33,46 +34,49 @@ class Asteroid:
         if not self.dead:
             for i in self.boss.Ps:
                 if not i.unused():
-                    if (self.X - i.X)**2 + (self.Y - i.Y)**2 <=\
-                     self.radius[self.Type]**2:
-                        self.dead = True
-                        i.X = -100
-                        i.Y = -100
-                        if self.Type == 'big'or self.Type == 'medium':
-                            if self.Type == 'big':
-                                son1 = self.boss.As[self.list_position + 1]
-                                son2 = self.boss.As[self.list_position + 4]
-                                son1.generate(self.list_position + 1)
-                                son2.generate(self.list_position + 4)
-                                self.boss.points += 20
-                            elif self.Type == 'medium':
-                                son1 = self.boss.As[self.list_position + 1]
-                                son2 = self.boss.As[self.list_position + 2]
-                                son1.generate(self.list_position + 1)
-                                son2.generate(self.list_position + 2)
-                                self.boss.points += 50
-                            son1.X = self.X
-                            son1.Y = self.Y
-                            son2.X = self.X
-                            son2.Y = self.Y
-                            alpha = random.random()
-                            sin_alpha = math.sin(alpha)
-                            cos_alpha = math.cos(alpha)
-                            son1.Vx = self.Vx * cos_alpha - self.Vy * sin_alpha
-                            son1.Vy = self.Vx * sin_alpha + self.Vy * cos_alpha
-                            sin_alpha = math.sin(-alpha)
-                            cos_alpha = math.cos(-alpha)
-                            son2.Vx = self.Vx * cos_alpha - self.Vy * sin_alpha
-                            son2.Vy = self.Vx * sin_alpha + self.Vy * cos_alpha
-                            if self.Type == 'big':
-                                son1.Type = 'medium'
-                                son2.Type = 'medium'
-                            elif self.Type == 'medium':
-                                son1.Type = 'small'
-                                son2.Type = 'small'
-                        else:
-                            self.boss.points += 100
-                        self.X = -100
-                        self.Y = -100
-                        if self.boss.points > self.boss.highscore:
-                            self.boss.highscore = self.boss.points
+                    a = self.X - i.X
+                    b = self.Y - i.Y
+                    c = self.radius[self.Type]
+                    if a + b <= c:
+                        if a**2 + b**2 <= c**2:
+                            self.dead = True
+                            i.X = -100
+                            i.Y = -100
+                            if self.Type == 'big'or self.Type == 'medium':
+                                if self.Type == 'big':
+                                    son1 = self.boss.As[self.list_position + 1]
+                                    son2 = self.boss.As[self.list_position + 4]
+                                    son1.generate(self.list_position + 1)
+                                    son2.generate(self.list_position + 4)
+                                    self.boss.points += 20
+                                elif self.Type == 'medium':
+                                    son1 = self.boss.As[self.list_position + 1]
+                                    son2 = self.boss.As[self.list_position + 2]
+                                    son1.generate(self.list_position + 1)
+                                    son2.generate(self.list_position + 2)
+                                    self.boss.points += 50
+                                son1.X = self.X
+                                son1.Y = self.Y
+                                son2.X = self.X
+                                son2.Y = self.Y
+                                alpha = random.random()
+                                sin_alpha = math.sin(alpha)
+                                cos_alpha = math.cos(alpha)
+                                son1.Vx = self.Vx * cos_alpha - self.Vy * sin_alpha
+                                son1.Vy = self.Vx * sin_alpha + self.Vy * cos_alpha
+                                sin_alpha = math.sin(-alpha)
+                                cos_alpha = math.cos(-alpha)
+                                son2.Vx = self.Vx * cos_alpha - self.Vy * sin_alpha
+                                son2.Vy = self.Vx * sin_alpha + self.Vy * cos_alpha
+                                if self.Type == 'big':
+                                    son1.Type = 'medium'
+                                    son2.Type = 'medium'
+                                elif self.Type == 'medium':
+                                    son1.Type = 'small'
+                                    son2.Type = 'small'
+                            else:
+                                self.boss.points += 100
+                            self.X = -100
+                            self.Y = -100
+                            if self.boss.points > self.boss.highscore:
+                                self.boss.highscore = self.boss.points
