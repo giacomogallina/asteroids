@@ -26,14 +26,15 @@ class Asteroid:
 
     def move(self):
         if not self.dead:
-            self.X = (self.X + self.Vx)%self.boss.window_width
-            self.Y = (self.Y + self.Vy)%self.boss.window_height
+            self.X = (self.X + self.Vx) % self.boss.window_width
+            self.Y = (self.Y + self.Vy) % self.boss.window_height
 
     def is_destroied(self):
         if not self.dead:
             for i in self.boss.Ps:
                 if not i.unused():
-                    if math.hypot(self.X - i.X, self.Y - i.Y) <= self.radius[self.Type]:
+                    if (self.X - i.X)**2 + (self.Y - i.Y)**2 <=\
+                     self.radius[self.Type]**2:
                         self.dead = True
                         i.X = -100
                         i.Y = -100

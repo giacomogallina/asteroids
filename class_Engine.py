@@ -23,7 +23,7 @@ class Engine(threading.Thread):
         self.lifes = 5
         self.points = 0
         self.acceleration = 1000.0 / (self.tick_rate**2)
-        self.friction = 0.8 ** (1.0/self.tick_rate)
+        self.friction = 0.8 ** (1.0 / self.tick_rate)
         self.rotation_speed = 5.0 / self.tick_rate
         self.projectile_speed = 400.0 / self.tick_rate
         self.asteroid_speed = 200.0 / self.tick_rate
@@ -47,10 +47,10 @@ class Engine(threading.Thread):
         self.tick_rate = int(settings[3])
 
     def wait_next_tick(self):
-        while time.time() < self.next_tick_time + self.tick_duration:
-            time.sleep(0.001)
         a = time.time() - self.next_tick_time
-        if a > 1 and self.tick % 250 == 0:
+        if a < 0:
+            time.sleep(-a)
+        elif a > 1 and self.tick % 250 == 0:
             print('engine back of', a)
         self.next_tick_time += self.tick_duration
         self.tick += 1

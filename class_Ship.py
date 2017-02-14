@@ -49,8 +49,8 @@ class Ship:
     def is_destroied(self):
         if not self.pulsing:
             for i in self.boss.As:
-                if math.hypot(self.X - i.X, self.Y - i.Y) <= i.radius[i.Type] \
-                 + 5:
+                if (self.X - i.X)**2 + (self.Y - i.Y)**2 <=\
+                 (i.radius[i.Type] + 5)**2:
                     self.pulsing = True
                     self.pulse_time = time.time()
                     self.X = self.boss.window_width/2
