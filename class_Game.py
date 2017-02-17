@@ -50,10 +50,10 @@ class Game:
         self.framerate = int(settings[2])
 
     def wait_next_frame(self):
-        while time.time() < self.frame_time + self.frame_duration:
-            time.sleep(0.001)
-        a = time.time() - self.frame_time
-        if a > 1 and self.frame % 100 == 0:
+        a = self.frame_time - time.time()
+        if a > 0:
+            time.sleep(a)
+        if a < -1 and self.frame % 100 == 0:
             print('gui back of', a)
         self.frame_time += self.frame_duration
         self.frame += 1

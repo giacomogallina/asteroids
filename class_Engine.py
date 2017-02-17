@@ -47,10 +47,10 @@ class Engine(threading.Thread):
         self.tick_rate = int(settings[3])
 
     def wait_next_tick(self):
-        a = time.time() - self.next_tick_time
-        if a < 0:
-            time.sleep(-a)
-        elif a > 1 and self.tick % 250 == 0:
+        a = self.next_tick_time - time.time()
+        if a > 0:
+            time.sleep(a)
+        elif a < -1 and self.tick % 250 == 0:
             print('engine back of', a)
         self.next_tick_time += self.tick_duration
         self.tick += 1
@@ -199,7 +199,7 @@ class Connections_accepter(threading.Thread):
         threading.Thread.__init__(self)
         self.boss = boss
         self.s = socket.socket()
-        self.s.bind(('192.168.1.8', 12346))
+        self.s.bind(('', 12346))
         self.start()
 
     def run(self):
