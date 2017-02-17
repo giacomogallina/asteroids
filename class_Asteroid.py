@@ -37,7 +37,7 @@ class Asteroid:
                     a = self.X - i.X
                     b = self.Y - i.Y
                     c = self.radius[self.Type]
-                    if a + b <= c:
+                    if b <= c:
                         if a**2 + b**2 <= c**2:
                             self.dead = True
                             i.X = -100

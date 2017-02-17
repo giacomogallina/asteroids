@@ -53,7 +53,7 @@ class Ship:
                     a = self.X - i.X
                     b = self.Y - i.Y
                     c = i.radius[i.Type] + 5
-                    if a + b <= c:
+                    if b <= c:
                         if a**2 + b**2 <= c**2:
                             self.pulsing = True
                             self.pulse_time = time.time()
@@ -68,7 +68,7 @@ class Ship:
                 if not i.unused():
                     a = self.X - i.X
                     b = self.Y - i.Y
-                    if a + b <= 8:
+                    if b <= 8:
                         if a**2 + b**2 <= 8**2:
                             self.pulsing = True
                             self.pulse_time = time.time()
