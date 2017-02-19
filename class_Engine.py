@@ -78,7 +78,7 @@ class Engine(threading.Thread):
         # self.status = ''
 
     def start_level(self, level):
-        for i in range(0, self.level * 14):
+        for i in range(0, 14):
             self.As.append(Asteroid(self))
         for i in range(0, self.level * 14, 7):
             self.As[i].generate(i)
