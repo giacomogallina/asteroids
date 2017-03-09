@@ -1,6 +1,10 @@
 import math, random, pygame
 
 class Asteroid:
+    """ 
+    The Asteroid class is used to create instances of the Asteroids for the games which contain position (X,Y) and velocity (Vx, Vy) 
+    data as well as position in the list of asteroid objects as well as mass and radius.
+    """
     global window_width, window_height, points, highscore, settings_file
     mass = {'big' : 4, 'medium' : 2, 'small' : 1}
     radius = {'big' : 50, 'medium' : 25, 'small' : 15}
@@ -16,7 +20,13 @@ class Asteroid:
         self.boss = boss
 
     def generate(self, position):
-        self.X = (random.randint(0, self.boss.window_width // 2) - self.boss.window_width/4) % self.boss.window_width
+        """ 
+        Generates a random velocity and state of a new asteroid object using the random.randint() to generate a 
+        random position/velocity within a range determined 
+        Args:
+            position: int - position in the list of asteroid objects
+        """
+        self.X = (random.randint(0, self.boss.window_width // 2) - self.boss.window_width/4) % self.boss.window_width  
         self.Y = (random.randint(0, self.boss.window_height // 2) - self.boss.window_height/4) % self.boss.window_height
         self.Vx = (random.random() * 2 -1) * self.boss.asteroid_speed
         self.Vy = (self.boss.asteroid_speed ** 2 - self.Vx ** 2) ** 0.5
@@ -24,12 +34,22 @@ class Asteroid:
         self.list_position = position
 
     def move(self):
-        if not self.dead:
-            self.X = (self.X + self.Vx)%self.boss.window_width
-            self.Y = (self.Y + self.Vy)%self.boss.window_height
+        """
+        Moves the asteroid by incrementing the position + the velocity in each dimension. Additionally wraps around if position is greater
+        than the size of the game panel. Draws the asteroid at new locations. 
+        """
+        if not self.dead:   # Checks if asteroid object is dead.
+            self.X = (self.X + self.Vx)%self.boss.window_width  
+            assert self.X >= 0 and self.X <= self.boss.window_width
+            self.Y = (self.Y + self.Vy)%self.boss.window_height 
+            assert self.Y >= 0 and self.Y <= self.boss.window_height 
             pygame.draw.circle(self.boss.surface, (255, 255, 255), (int(self.X), int(self.Y)), self.radius[self.Type], 1)
 
     def is_destroied(self):
+        """
+        Collision checker for asteroid collisions with the projectile object. If collision occurs it destroys the instance
+        of the asteroid class as well as the projectile.
+        """
         for i in self.boss.Ps:
             if not i.unused():
                 if math.hypot(self.X - i.X, self.Y - i.Y) <= self.radius[self.Type]:
