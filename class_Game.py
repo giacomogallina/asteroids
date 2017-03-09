@@ -6,13 +6,19 @@ from class_Settings_window import *
 pygame.font.init()
 
 class Game:
-    points_font = pygame.font.Font(None, 36)
+    """
+    The class_Game.py deals with the implementation of the game logic such as player moves,
+    registering keyboard/mouse events, drawing screens to the game panel, and starting and ending
+    the game.
+    """
+    points_font = pygame.font.Font(None, 36) 
     level_font = pygame.font.Font(None, 100)
     start_font = pygame.font.Font(None, 200)
     started = False
     Ps = []
 
     def __init__(self):
+        """Initializes the Game class with framerate dependent variables such as acceleration, friction, rotational speed, etc... """
         global highscore, window_width, window_height, framerate, players, settings_file, surface
         self.import_settings()
         self.surface = pygame.display.set_mode((self.window_width, self.window_height))
@@ -25,18 +31,23 @@ class Game:
         self.frame_time = time.time()
         self.frame_duration = 1.0 / self.framerate
         self.frame = 0
+        # Adds new projectile to list of projectile objects.
         for i in range(0, 8):
             self.Ps.append(Projectile(self))
 
     def import_settings(self):
+        """ Imports settings from the setting.txt file."""
+        # Opens and reads settings.txt from current folder.
         try:
             settings_file = open('settings.txt', 'r+')
+        # Creates new settings file if non-existant.
         except:
             create = open('settings.txt', 'w')
             create.write('0\n600\n480\n30\n1')
             create.close()
             settings_file = open('settings.txt', 'r+')
 
+        # Read and save settings from settings.txt file.
         settings = settings_file.readlines()
         settings_file.close()
         self.highscore = int(settings[0])
@@ -46,13 +57,16 @@ class Game:
         self.players = int(settings[4])
 
     def wait_next_frame(self):
+        """ Puts the current thread to sleep while waiting for next frame using a While loop."""
         while time.time() < self.frame_time + self.frame_duration:
             time.sleep(0.001)
         self.frame_time += self.frame_duration
         self.frame += 1
 
     def events(self):
+        """Recognizes and handles player key events such as mouse and keyboard input."""
         for event in pygame.event.get():
+            # Handles keydown (key press) event initiated by user.
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     self.shuttle_1.left = True
@@ -60,6 +74,7 @@ class Game:
                     self.shuttle_1.right = True
                 if event.key == pygame.K_UP:
                     self.shuttle_1.up = True
+                # Handles second player events.
                 if self.players == 2:
                     if event.key == pygame.K_a:
                         self.shuttle_2.left = True
@@ -74,9 +89,10 @@ class Game:
                 else:
                     if event.key == pygame.K_SPACE:
                         self.shuttle_1.shoot = True
-
+                # Non-functional code.
                 if event.key == pygame.K_ESCAPE:
                     self.draw_options()
+            # Handles keyup (key release) event initiated by user by terminating initiated action.
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT:
                     self.shuttle_1.left = False
@@ -93,13 +109,21 @@ class Game:
                         self.shuttle_2.up = False
 
     def start_level(self, level):
+        """
+        Starts a new level.
+        Args:
+            Level: An integer value representing the new level to load.
+        """
+        # Generates 14 asteroids per level.
         for i in range(0, self.level * 14):
             self.As.append(Asteroid(self))
+        # Initialize each asteroid.
         for i in range(0, self.level * 14, 7):
             self.As[i].generate(i)
         self.level_start_frame = -1
 
     def check_for_level(self):
+        """ """
         for i in self.As:
             if i.dead == False:
                 return False
@@ -119,34 +143,37 @@ class Game:
             self.start_level(self.level)
 
     def draw_points(self):
+        """Draws game points to game panel."""
+        # Creates Point Box element.
         points_box = self.points_font.render(str(self.points), 0,\
                                              (255, 255, 255))
+        # Add point box to game panel.
         self.surface.blit(points_box, \
                           (self.window_width - self.points_font.size\
                           (str(self.points))[0] - 10, 10))
 
     def draw_lifes(self):
+        """Draw the number of lives to game panel."""
+        # Create life box with current number of lives.
         lifes_box = self.points_font.render('Δ x ' + str(self.lifes), 0, \
                                             (255, 255, 255))
+        # Add life box to game panel.
         self.surface.blit(lifes_box, (10, 10))
 
     def draw_highscore(self):
+        """Draws the highscore to game panel."""
+        # Creates high score box.
         highscore_box = self.points_font.render('HIGHSCORE: ' + \
                                                 str(self.highscore),\
                                                 0, (255, 255, 255))
+        # Adds high score box to game panel.
         self.surface.blit(highscore_box, ((self.window_width - \
                                            self.points_font.size\
                                            ('HIGHSCORE: ' + \
                                             str(self.highscore))[0])/2, 10))
 
-    def draw_options(self):
-        #print("options hasn't been implemented yet")
-
-        s = Settings_window(self)
-
-        self.frame_time = time.time()
-
     def move(self):
+        """Calls the move() method of projectile/ship/asteroid class based on player input. and current player."""
         self.check_for_level()
         self.shuttle_1.move()
         self.shuttle_1.is_destroied()
@@ -166,6 +193,7 @@ class Game:
         pygame.display.update()
 
     def wait_for_space(self):
+        """Utilizes a for loop to pause the game while waiting for the user to input a SPACE key on the keyboard. Presumably for pausing the game."""
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 return True
@@ -174,14 +202,17 @@ class Game:
         time.sleep(0.01)
 
     def draw_gameover(self):
+        """Draws the Game Over screen to the game panel. Function consists of three for loops and allows user to return to entry screen by pressing space"""
         death_frame = self.frame
-
+        # Creates initial game over screen, while loop breaks after time.
         while True:
             self.wait_next_frame()
             gc = 255 * (self.frame - death_frame)/self.framerate
             self.surface.fill((0, 0, 0))
+            # Creates first game over box.
             gameover_box_1 = self.level_font.render('GAME OVER', \
                                                     0, (gc, gc, gc))
+            # Adds first game over box to game panel.
             self.surface.blit(gameover_box_1, ((self.window_width - self.level_font.size\
                                            ('GAME OVER')[0])/2, \
                                           (self.window_height - self.level_font.size\
@@ -195,6 +226,7 @@ class Game:
             pygame.display.update()
             if self.frame == death_frame + self.framerate:
                 break
+        # Creates same game over screen as above, closed when user enters SPACE on keyboard.
         while True:
             self.surface.fill((0, 0, 0))
             gameover_box_1 = self.level_font.render('GAME OVER',\
@@ -215,6 +247,7 @@ class Game:
             if self.wait_for_space():
                 break
         self.frame_time = time.time()
+        # While loop that creates game over screen, breaks after time.
         while True:
             self.wait_next_frame()
             gc = 255 * (1-(self.frame - death_frame - self.framerate)*1.0/self.framerate) +1
@@ -240,7 +273,9 @@ class Game:
         return True
 
     def start(self):
+        """ Starts the game after option chosen from intro menu."""
         self.frame_time = time.time()
+        # Checks if multiplayer enabled.
         if self.players == 2:
             self.shuttle_1 = Ship(self, (0, 255, 0))
             self.shuttle_2 = Ship(self, (255, 0, 0))
@@ -256,6 +291,7 @@ class Game:
         else:
             self.lifes = 3
         self.start_level(self.level)
+        # Runs game by calling other methods. Terminates when player runs out of lives.
         while True:
             self.wait_next_frame()
             self.events()
@@ -265,6 +301,8 @@ class Game:
                 break
 
     def draw_start_screen(self):
+        """ Draws the start screen to the game panel. """
+        # While loop creates the start screen objects, initiates game when user presses space.
         while True:
             self.surface.fill((0, 0, 0))
             start_box_1 = self.start_font.render('ASTEROIDS', \
