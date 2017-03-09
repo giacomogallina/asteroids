@@ -172,6 +172,13 @@ class Game:
                                            ('HIGHSCORE: ' + \
                                             str(self.highscore))[0])/2, 10))
 
+    def draw_options(self):
+        """Draws the option menu"""
+        #creates a settings window, which starts handling mouse input and the display
+        s = Settings_window(self)
+        #keeps frame_time up-to-date
+        self.frame_time = time.time()
+
     def move(self):
         """Calls the move() method of projectile/ship/asteroid class based on player input. and current player."""
         self.check_for_level()
